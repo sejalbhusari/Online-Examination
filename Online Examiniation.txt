@@ -1,0 +1,136 @@
+import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
+
+class User {
+    private String username;
+    private String password;
+    private int score;
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+        this.score = 0;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void increaseScore() {
+        this.score++;
+    }
+}
+
+class Question {
+    private String questionText;
+    private String[] options;
+    private int correctAnswer;
+
+    public Question(String questionText, String[] options, int correctAnswer) {
+        this.questionText = questionText;
+        this.options = options;
+        this.correctAnswer = correctAnswer;
+    }
+
+    public String getQuestionText() {
+        return questionText;
+    }
+
+    public String[] getOptions() {
+        return options;
+    }
+
+    public int getCorrectAnswer() {
+        return correctAnswer;
+    }
+}
+
+public class OnlineQuizSystem {
+    private static User currentUser;
+
+    public static void main(String[] args) throws InterruptedException {
+        initializeUser(); 
+       
+        Question[] questions = {
+                new Question("What is the capital of France?",
+                        new String[]{"A) London", "B) Paris", "C) Berlin", "D) Rome"},
+                        1),
+                new Question("Which planet is known as the Red Planet?",
+                        new String[]{"A) Venus", "B) Mars", "C) Jupiter", "D) Saturn"},
+                        1),
+                
+        };
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Welcome to the Online Quiz System!");
+        login(scanner);  
+
+        for (Question question : questions) {
+            displayQuestion(question);
+
+            TimeUnit.SECONDS.sleep(10);  
+
+            System.out.println("Time's up! Auto-submitting your answer.");
+            
+            processAnswer(scanner, question, -1);
+        }
+
+        displayResult();
+    }
+
+    private static void initializeUser() {
+        
+        currentUser = new User("user123", "password");
+    }
+
+    private static void login(Scanner scanner) {
+        
+        System.out.print("Enter your username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter your password: ");
+        String password = scanner.nextLine();
+
+        if (currentUser.getUsername().equals(username) && currentUser.getPassword().equals(password)) {
+            System.out.println("Login successful!");
+        } else {
+            System.out.println("Invalid username or password. Exiting...");
+            System.exit(0);
+        }
+    }
+
+    private static void displayQuestion(Question question) {
+        System.out.println(question.getQuestionText());
+        String[] options = question.getOptions();
+        for (String option : options) {
+            System.out.println(option);
+        }
+    }
+
+    private static void processAnswer(Scanner scanner, Question question, int selectedOption) {
+        if (selectedOption == question.getCorrectAnswer()) {
+            System.out.println("Correct answer!");
+            currentUser.increaseScore();
+        } else {
+            System.out.println("Wrong answer!");
+        }
+    }
+
+    private static void displayResult() {
+        System.out.println("Quiz completed!");
+        System.out.println("Your score: " + currentUser.getScore());
+        System.out.println("Logging you out. Goodbye!");
+    }
+}
